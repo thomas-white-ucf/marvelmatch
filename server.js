@@ -10,6 +10,8 @@ var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+server.use(express.static(__dirname + '/public'));
+
 // ===============================================================================
 // ROUTER
 // The below points our server to a series of "route" files.
