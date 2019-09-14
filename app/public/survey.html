@@ -1,4 +1,270 @@
-<!-- Your `htmlRoutes.js` file should include two routes:
+<!DOCTYPE html>
+<html lang="en">
 
-* A GET Route to `/survey` which should display the survey page.
-* A default, catch-all route that leads to `home.html` which displays the home page. -->
+<head>
+  <meta charset="UTF-8">
+  <title>Super Survey</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="jumbotron">
+      <h1 class="text-center">
+        <span class="fa fa-fire"></span>Marvel Match</h1>
+      <hr>
+      <h2 class="text-center">Supers Survey</h2>
+      <br>
+      <div class="text-center">
+        <a href="api/friends">
+          <button class="btn btn-lg btn-primary">
+            <span class="fa fa-list-alt"></span>View Characters</button>
+        </a>
+        <a href="/">
+          <button class="btn btn-lg btn-default">
+            <span class="fa fa-home">Home Page</span>
+          </button>
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+
+        <!-- Character Entry Form (page) -->
+        <div class="card">
+
+          <div class="card-header">
+            Character Survey
+          </div>
+
+          <div class="card-body">
+
+                <h4>Character Name</h4>
+                <input type="text" id="new-name" class="form-control" required>
+
+                <h3>Question 1 </h3>
+                <h2>Can you fly?</h2>
+                <select class="chosen-select" id="q1">
+                        <option value></option>
+                        <option value="1">No</option>
+                        <option value="2">Don't think so</option>
+                        <option value="3">Kinda</option>
+                        <option value="4">Yes</option>
+                        <option value="5">Fast</option>
+                </select>  
+
+                <!-- <strong>Question 2 </strong>
+                <h4>Can you Swim?</h4>
+                <select class="chosen-select" id="q2">
+                        <option value></option>
+                        <option value="1">No</option>
+                        <option value="2">Don't think so</option>
+                        <option value="3">Kinda</option>
+                        <option value="4">Yes</option>
+                        <option value="5">Fast</option>
+                </select>    -->
+
+
+                <!-- <div class="chosen-container chosen-container-single" style="width: 155px;" title="" id="q1_chosen">
+                    <a class="chosen-single">
+                        <span>2</span> -->
+                <!-- <div>
+                    <b></b>
+                </div>
+                </a> -->
+                    <!-- <div class="chosen-drop"><div class="chosen-search">
+                        <input type="text" autocomplete="off">
+                    </div>
+                    <ul class="chosen-results">
+                            <li class="active-result" data-option-array-index="1" style>1 (Strongly Disagree)</li>
+                            <li class="active-result result-selected" data-option-array-index="2" style>2</li>
+                            <li class="active-result" data-option-array-index="3" style>3</li>
+                            <li class="active-result" data-option-array-index="4" style>4</li>
+                            <li class="active-result" data-option-array-index="5" style>5 (Strongly Agree)</li>
+                        </ul> -->
+                    <!-- </div>
+                </div> -->
+              
+              <button type="submit" class="btn btn-primary submit">
+                  Submit
+            </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          <a href="/api/friends">API Characters Link</a> |
+          <a href="/home">home</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL -->
+  <div id="results-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                    <h2 class="modal-title">
+                        <strong>Supers Match!</strong>
+                    </h2>
+              </div>
+              <div class="modal-body">
+                    <h2 id="match-name"></h2>
+                    <!-- Add image -->
+              </div>
+              <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+        </div>
+      </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <!-- Chosen -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+
+<!-- BELOW CODE IS CRITICAL. IT HANDLES HOW FORM DATA IS SENT TO OUR SERVER -->
+<script type="text/javascript">
+
+// CSS
+    var config = {
+        ".chosen-select": {},
+        ".chosen-select-deselect": {
+            allow_single_deselect: true
+        },
+        ".chosen-select-no-single": {
+            disable_search_threshold: 10
+        },
+        ".chosen-select-no-results": {
+            no_results_text: "nothing found!"
+        },
+        ".chosen-select-width": {
+            width: "95%"
+        }
+    };
+
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+
+  // * In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
+  //   In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
+  //   Our api recognizes the route (/api/friends)... and then runs the associated code (found in >> apiRoutes.js).
+  //   In this case the associated code "saves" the data to the friends.js file
+
+  $(".submit").on("click", function(event) {
+    event.preventDefault();
+
+    // Validate the form was filled out correctly
+    function validateForm() {
+
+        var isValid = true;
+
+        $(".form-control").each(function() {
+            if ($(this).val() === "") {
+                isValid = false;
+            }
+
+        });
+
+        $(".chosen-select").each(function() {
+            
+            if ($(this).val() === "") {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    if (validateForm()) {
+        // Here we grab the form elements
+        var newCharacter = {
+          name: $("#new-name").val().trim(),
+          scores: [
+              $("#q1").val().trim()
+              //   ,
+              //   $("#q2").val().trim(),
+              //   $("#q3").val().trim(),
+              //   $("#q4").val().trim(),
+              //   $("#q5").val().trim(),
+              //   $("#q6").val().trim(),
+              //   $("#q7").val().trim(),
+              //   $("#q8").val().trim(),
+              //   $("#q9").val().trim(),
+              //   $("#q10").val().trim()
+            ]
+        };
+
+        
+        console.log(newCharacter);
+        
+        // ****************************************
+        // ****************************************
+        // THIS LINE IS THE MAGIC. It"s very similar to the standard ajax function we used.
+        $.post("/api/friends", newCharacter,
+        function(data) {
+            // Essentially we give it a URL, we give it the object we want to send (newCharacter), then we have a "callback" ( function(data) ).
+            // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
+            // depending on if a tables is available or not.
+            
+            // If a table is available... tell user they are booked.
+            if (data) {
+                alert("Less than 20 Characters, you're in");
+                // POST was able to be successfully completed, logic was performed on server side in >>  apiRoutes.js file
+                
+                //  NEED TO ADD SOMETHING HERE
+                // 
+                //  returns true or false depending on friends (tables) logic in apiRoutes.js
+                // +++++++++++++=====================
+            }
+            
+            // If a friends list has more than 20 people on it ... tell user they have not been saved.
+            else {
+                alert("Sorry youre entry was not saved. (will add more..)");
+            }
+            
+            // Clear the form when submitting
+            $("#new-name").val().trim()
+            $("#q1").val().trim()
+            // $("#q2").val().trim()
+            // $("#q3").val().trim()
+            // $("#q4").val().trim()
+            // $("#q5").val().trim()
+            // $("#q6").val().trim()
+            // $("#q7").val().trim()
+            // $("#q8").val().trim()
+            // $("#q9").val().trim()
+            // $("#q10").val().trim()
+            
+            });
+        } 
+            // IF THE FORM IS NOT VALID
+        else {
+            "Please Complete the Supers Survey to Match with a Character"}
+        
+    });
+    
+    </script>
+    </body>
+
+</html>
+
