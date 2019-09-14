@@ -18,8 +18,21 @@ module.exports = function(app) {
 	app.post('/api/friends', function(req, res) {
 		// ADD CODE TO COMPARE USER INPUT SCORE TO the array of freinds
 
+		console.log("req.body = ", req.body)
+		
 		// .. loop through friends, compare each i for req.body (SURVEY RESULT SUBMISSION) submission compare to each friend.
 		// Absolute value difference, save each, replace if it is lower, save that friends place in variable, display this in modal pop up
+
+		// ADD code to check if friend-X matches best with the input character scores
+
+		// let difference = 0;
+		// for (let i = 0; i < friends.length; i++) {
+
+		// 		difference = friends[i].scores[i]
+		// 		for (let i = 0; i < friends.length; i++) {
+		// 		}
+
+		// }
 
 		if (friends.length < 20) {
 			friends.push(req.body);
