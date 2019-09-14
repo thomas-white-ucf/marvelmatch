@@ -16,20 +16,18 @@ module.exports = function(app) {
 
 	// * A GET Route to `/survey` which should display the survey page.
 	app.get('/survey', function(req, res) {
-		res.json(path.join(__dirname, 'public/survey.html'));
+		res.json(path.join(__dirname, '../public/survey.html'));
 		// removed ../ from path
 		// CHANGED ALL sendFile >>> to json
 	});
 
 	// * A default, catch-all route that leads to `home.html` which displays the home page.
 	app.get('/', function(req, res) {
-		res.json(path.join(__dirname, 'public/home.html'));
-		// removed ../ from path
+		res.json(path.join(__dirname, '../public/home.html'));
 	});
 
 	// * A default, catch-all route that leads to `home.html` which displays the home page.
 	app.get('*', function(req, res) {
-		res.json(path.join(__dirname, 'public/home.html'));
-		// removed ../ from path
+		res.json(path.join(__dirname, '../public/home.html'));
 	});
 };
