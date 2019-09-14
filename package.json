@@ -1,0 +1,27 @@
+{
+  "name": "marvelmatch",
+  "version": "1.0.0",
+  "description": "Matches your Supers Survey to a similar character",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^1.19.2",
+    "path": "^0.12.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomas-white-ucf/marvelmatch.git"
+  },
+  "keywords": [],
+  "author": "Thomas White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thomas-white-ucf/marvelmatch/issues"
+  },
+  "homepage": "https://github.com/thomas-white-ucf/marvelmatch#readme"
+}
