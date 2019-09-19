@@ -4,46 +4,51 @@ var friends = require('../data/friends');
 // ROUTES with express
 
 module.exports = function(app) {
-	//
 	// ** A GET route with the url `/api/friends`.
 	// ** This will be used to display a JSON of all possible friends.
 	app.get('/api/friends', function(req, res) {
 		res.json(friends);
 	});
 
-	//
 	// ** A POST routes `/api/friends`.
 	// ** This will be used to handle incoming survey results.
 	// ** This route will also be used to handle the compatibility logic.
 	app.post('/api/friends', function(req, res) {
-		// ADD CODE TO COMPARE USER INPUT SCORE TO the array of freinds
-
-		console.log("req.body = ", req.body)
+		// console.log("req.body = ", req.body)
+		// console.log('req.body.name = ', req.body.name);
 		
-		// .. loop through friends, compare each i for req.body (SURVEY RESULT SUBMISSION) submission compare to each friend.
-		// Absolute value difference, save each, replace if it is lower, save that friends place in variable, display this in modal pop up
-
-		// ADD code to check if friend-X matches best with the input character scores
-
-		// let difference = 0;
-		// for (let i = 0; i < friends.length; i++) {
-
-		// 		difference = friends[i].scores[i]
-		// 		for (let i = 0; i < friends.length; i++) {
-		// 		}
-
-		// }
-
-		if (friends.length < 20) {
+		// add the new friend to the array
+		if (friends.length < 1000) {
+			console.log('=========================');
 			friends.push(req.body);
 			res.json(true);
-			console.log(friends);
+			// response with true
+
+			console.log("new friend array friend = req.body =", req.body);
+			console.log('=========================');
 		} else {
 			res.json(false);
-			console.log(friends);
+			console.log("fail FAIL  - - - - - - - FAIL ");
 		}
+
 	});
 };
+
+
+
+// ======= END
+
+// =======	_Marvel Match
+
+
+
+
+
+
+
+
+
+// =======
 
 // =======
 // =======

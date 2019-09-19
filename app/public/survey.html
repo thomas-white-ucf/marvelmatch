@@ -201,121 +201,217 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
-<!--  -->
-<!--  -->
+<!-- ====================================================================== -->
 <!-- BELOW CODE IS CRITICAL. IT HANDLES HOW FORM DATA IS SENT TO OUR SERVER -->
+
   <script type="text/javascript">
 
-// CSS
-var config = {
-        ".chosen-select": {},
-        ".chosen-select-deselect": {
-            allow_single_deselect: true
-        },
-        ".chosen-select-no-single": {
-            disable_search_threshold: 10
-        },
-        ".chosen-select-no-results": {
-            no_results_text: "nothing found!"
-        },
-        ".chosen-select-width": {
-            width: "95%"
-        }
-    };
-
-for (var selector in config) {
-        $(selector).chosen(config[selector]);
-}
-
-// * In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
-//   In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
-//   Our api recognizes the route (/api/friends)... and then runs the associated code (found in >> apiRoutes.js).
-//   In this case the associated code "saves" the data to the friends.js file
-
-//   ON - SUBMIT - CLICK 
-//     +++++  
-$(".submit").on("click", function(event) {
-     event.preventDefault();
-
-    // Validate form was filled out correctly
-    function validateForm() {
-        var isValid = true;
-        $(".form-control").each(function() {
-            if ($(this).val() === "") {
-                isValid = false;
+    // CSS
+    var config = {
+            ".chosen-select": {},
+            ".chosen-select-deselect": {
+                allow_single_deselect: true
+            },
+            ".chosen-select-no-single": {
+                disable_search_threshold: 10
+            },
+            ".chosen-select-no-results": {
+                no_results_text: "nothing found!"
+            },
+            ".chosen-select-width": {
+                width: "95%"
             }
-        });
-
-        $(".chosen-select").each(function() {
-            if ($(this).val() === "") {
-                isValid = false;
-            }
-        });
-        return isValid;
-    }
-
-    // Creates a New Character > POSTING to friends array 
-    // IF form is Valid on submit this will be true
-    if (validateForm()) {
-        // Here we grab the form elements
-        var newCharacter = {
-          name: $("#new-name").val().trim(),
-          scores: [
-              $("#q1").val(),
-                $("#q2").val(),
-                $("#q3").val(),
-                $("#q4").val(),
-                $("#q5").val(),
-                $("#q6").val(),
-                $("#q7").val(),
-                $("#q8").val(),
-                $("#q9").val(),
-                $("#q10").val()
-            ]
         };
 
-        console.log(newCharacter);
-        
-        // ****************************************
-        // ****************************************
+    for (var selector in config) {
+            $(selector).chosen(config[selector]);
+    }
 
-        $.post("/api/friends", newCharacter, function(data) {
+    // * In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
+    // In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
+    // Our api recognizes the route (/api/friends)... and then runs the associated code (here or move back to >> apiRoutes.js).
+    // In this case the associated code "saves" the data to the friends.js file
 
-        // THIS LINE IS THE MAGIC. It"s very similar to the standard ajax function we used.
-        // * adds User data to friends array
-        // Essentially we give it a URL, we give it the object we want to send (newCharacter), then we have a "callback" ( function(data) ).
-        // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
-        // POST was able to be successfully completed, logic was performed on server side in >>  apiRoutes.js file
-        // returns true or false depending on friends logic in >> apiRoutes.js
-        
-            // Able to use data here
-            // Get data.name, Display result modal with best Match (from apiRoutes Logic)
-            $("#match-name").text(data.name);
-            $("#results-modal").modal("toggle");
 
-            // Clear the form when submitting
+        // * Validate form was filled out correctly
+        function validateForm() {
+            var isValid = true;
+            $(".form-control").each(function() {
+                if ($(this).val() === "") {
+                    isValid = false;
+                }
+            });
+
+            $(".chosen-select").each(function() {
+                if ($(this).val() === "") {
+                    isValid = false;
+                }
+            });
+            return isValid;
+        }
+
+        // called in runMarvelQuery, after form submit
+        function displayModal(match) {
+
+          console.log("displayModal(match)  >>>>>> ___+ match =", match)
+
+          $("#match-name").text(match.name);
+          $("#results-modal").modal("toggle");
+        }
+
+        // Clear the form when submitting
+        function clearForm() {
             $("#new-name").val("");
-            $("#q1").val("");
-            $("#q2").val("");
-            $("#q3").val("");
+            $("#q1").val(""); 
+            $("#q2").val(""); 
+            $("#q3").val(""); 
             $("#q4").val("");
-            $("#q5").val("");
+            $("#q5").val(""); 
             $("#q6").val("");
             $("#q7").val("");
             $("#q8").val("");
             $("#q9").val("");
             $("#q10").val("");
-            
-            });
-        }
-        // ELSE - IF THE FORM IS NOT VALID
-        else {
-            alert("Please Complete the Supers Survey to Match with a Character")}
+    }
+
+        // AFTER BUTTON CLICK => 
+        //                  runMarvelQuery > then > displayModal(match)
+        function runMarvelQuery() {
+
+              // The AJAX function uses the URL of our API to GET the match associated with it (initially set to localhost)
+              $.ajax({ url: "/api/friends", method: "GET" })
+                .then(function(friends) {
+                          // Here we then log the friends to console
+                          // friends will display as object
+                          // console.log("ajax GET request > friend = ", friends);
+                          // console.log("------------------------------------");
+
+                          // DETERMINE BEST MATCH
+
+                              // largest possible question point difference is less than 50
+                              let test = 50;
+                              let recentAddIndex = (friends.length - 1)
+                              console.log("added index = ", recentAddIndex)
+
+                              // .. loop through friends, compare each i for friends items
+                              // Absolute value difference, save each, replace if it is lower,
+                              // save that friends place in variable,
+                              // display this in modal pop up
+                              //  ENDING J at  ( - 1 )   -  so it does not compare to last added friend
+
+                              let match;
+
+                              // Determine which character is best match to current form entry (friends)  -  j
+                              for (let j = 0; j < recentAddIndex; j++) {
+
+                                    // reset difference and resultrs for each j loop
+                                    let difference = 0;
+                                    let result = 0;
+
+                                    console.log('new loop test > low match number to beat > test = ', test);
+                                    console.log('---- --- ---- --- -- --- ');
+
+                                    // Get Best Match
+                                    //  - least difference between current entry and list of characters  -  i
+                                    for (let i = 0; i < 9; i++) {
+                                          difference = Math.abs(friends[j].scores[i] - friends[recentAddIndex].scores[i]);
+                                          result += difference;
+                                    }     
+
+                                    // capture friend match index j if result is less than the current test
+                                    if ((result < test)) {  
+                                          // match is result j index
+                                          match = friends[j];
+                                          
+                                          // set new test to result that was lower than current test
+                                          test = result;
+
+                                          console.log('found lower number difference for =>   result = ', result);
+                                          console.log('match = ', match);
+
+                                    } else if( (recentAddIndex - 1)  === j ) {
+
+                                          // IF ON LAST LOOP - return the best match 
+                                          // console.log('last loop. j === (friends.length -1) == match => ', match);
+                                          console.log("else if > last loop > call function DISPLAYMODAL(match)")
+                                          displayModal(match)
+
+                                    }
         
-    });
-    
+                                } // END for loop j
+                    }); // END $.ajax
+          }
+
+        //   ON - SUBMIT - CLICK   > ≥ +++++  validate form data  > ≥ +++++    then runMarvelQuery
+        $(".submit").on("click", function(event) {
+          event.preventDefault();
+
+          // If form is Valid on submit this will be true
+          //    GRAB form data > POST newCharacter to friends array with that info
+          if (validateForm()) {
+
+                  // Grab info from form to Create new character
+                  var newCharacter = {
+                      name: $("#new-name").val().trim(),
+                      scores: [
+                            $("#q1").val(),
+                            $("#q2").val(),
+                            $("#q3").val(),
+                            $("#q4").val(),
+                            $("#q5").val(),
+                            $("#q6").val(),
+                            $("#q7").val(),
+                            $("#q8").val(),
+                            $("#q9").val(),
+                            $("#q10").val()
+                        ]
+                  };
+
+                  // console log new character variable > contructed with form info
+                  console.log("survey JS > > newCharacter = ", newCharacter);
+              
+                  // =
+                  //  POST
+                  // THIS LINE IS THE MAGIC. It"s very similar to the standard ajax function we used.
+                      // * adds User data to friends array
+                      // Essentially we give it a URL, we give it the object we want to send (newCharacter), then we have a "callback" ( function(data) ).
+                      // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
+                      // POST was able to be successfully completed, 
+                      //    >  logic was performed on server side in >>  apiRoutes.js file
+                      //    >  returns true or false depending on friends logic 
+                  //  POST
+
+                  // call runMarvelQuery if data = true
+                  $.post("/api/friends", newCharacter, function(data) {
+                  
+                          // Able to use data here
+                          console.log("survey JS > > data ========== ", data)
+
+                          // runMarvelQuery to test on button click after newCharacter is posted
+                          if (data) {
+                            runMarvelQuery();
+                            clearForm(); 
+                            console.log("called functions runMarvelQuery() and clearForm")
+                          } 
+                          else {
+                            // end if(data) if statement
+                            alert("survey logic fail - if statement")
+                          }
+                  }); 
+                  // end POST - $.post > /api/friends > newCharacter > > >  callback function(data)
+              } // ELSE - IF THE FORM IS NOT VALID 
+                else {
+                  alert("Please Complete the Supers Survey to Match with a Character")
+                };
+          });
+        
   </script>
+
 </body>
 
 </html>
 
+
+  <!-- // In this code, jQuery is used to "download" the match from our server 
+  // We then dynamically display this content in our table. This is very similar to the group projects you just completed.
+  // It's also very similar to the NYT search application. In fact, I copied a ton of code from there.
