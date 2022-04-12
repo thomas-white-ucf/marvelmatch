@@ -1,5 +1,5 @@
 {
-  "name": "marvelmatch",
+  "name": "marvel-match",
   "version": "1.0.0",
   "description": "Matches your Supers Survey to a similar character",
   "main": "server.js",
